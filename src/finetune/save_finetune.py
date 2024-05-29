@@ -77,7 +77,7 @@ def main():
     log_path = os.path.join(args.log_dir, "save_finetune")
     if not os.path.exists(log_path):
         os.makedirs(log_path)
-    log_path = os.path.join(log_path, "save_finetune_{}.log".format(args.model, args.mode))
+    log_path = os.path.join(log_path, "save_finetune_{}.log".format(args.model))
     logger = Logger(log_path)
     save_finetune(config, "train", args.model, args.loss_fn, logger, args.batch_size)
     save_finetune(config, "test", args.model, args.loss_fn, logger, args.batch_size)
