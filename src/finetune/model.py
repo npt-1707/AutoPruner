@@ -1,5 +1,5 @@
 from torch import nn
-from transformers import AutoModel, T5EncoderModel, PLBartModel, AutoTokenizer
+from transformers import AutoModel, T5EncoderModel, PLBartModel, AutoTokenizer, T5Model
 
 models = {
     "codebert-base": {
@@ -98,4 +98,7 @@ class EmbeddingModel(nn.Module):
 
         if "trust_remote_code" in models[self.model_name]:
             kwargs["trust_remote_code"] = True
-        return models[self.model_name]["model"].from_pretrained(**kwargs)
+        model = models[self.model_name]["model"].from_pretrained(**kwargs)
+        if "plbart" in self.model_name:
+            return model.encoder
+        return model
