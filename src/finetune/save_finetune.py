@@ -6,11 +6,11 @@ from argparse import ArgumentParser
 from torch.utils.data import DataLoader
 from torch import nn
 from src.finetune.dataset import CallGraphDataset
-from src.utils.utils import read_config_file, Logger
+from src.utils.utils import read_config_file, Logger, set_seed
 from src.finetune.model import EmbeddingModel
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+set_seed(42)
 
 def save_finetune(config, mode, model_name, loss_fn, logger, batch_size=10):
     logger.info(f"Saving finetuned embeddings for {model_name} model")
@@ -56,6 +56,7 @@ def save_finetune(config, mode, model_name, loss_fn, logger, batch_size=10):
         emb = emb.detach().cpu().numpy()
         save_path = os.path.join(save_dir, "{}.npy".format(idx))
         np.save(save_path, emb)
+    logger.info(f"Saved into {save_dir}!")
 
 
 def get_args():
@@ -66,8 +67,7 @@ def get_args():
     parser.add_argument("--model", type=str, default="codebert-base", required=True)
     parser.add_argument("--loss_fn", type=str, default="cross_entropy", required=True)
     parser.add_argument("--batch_size", type=int, default=10)
-    parser.add_argument("--mode", type=str, default="train")
-    parser.add_argument("--log_dir", type=str, default="logs")
+    parser.add_argument("--log_dir", type=str, default="log")
     return parser.parse_args()
 
 

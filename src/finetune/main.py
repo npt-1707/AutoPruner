@@ -6,6 +6,7 @@ from src.utils.utils import (
     read_config_file,
     load_json,
     save_json,
+    set_seed,
 )
 from src.finetune.model import EmbeddingModel
 from src.utils.loss_fn import get_loss_fn
@@ -23,6 +24,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+set_seed(42)
 
 
 def train(dataloader, model, mean_loss, loss_fn, optimizer, cfx_matrix):
@@ -93,7 +95,9 @@ def find_checkpoint(learned_model_dir):
     if len(checkpoint_files) == 0:
         return
     lastest_epoch = max([int(f.split("_")[-1].split(".")[0]) for f in checkpoint_files])
-    checkpoint = os.path.join(learned_model_dir, "model_epoch_{}.pth".format(lastest_epoch))
+    checkpoint = os.path.join(
+        learned_model_dir, "model_epoch_{}.pth".format(lastest_epoch)
+    )
     return checkpoint, lastest_epoch
 
 
@@ -129,7 +133,7 @@ def do_train(
             return
         logger.info("Loaded checkpoint from {}".format(checkpoint))
         model, optimizer, max_f1 = load_checkpoint(checkpoint, model, optimizer)
-        
+
     for epoch in range(last_epoch + 1, epochs):
         logger.info("Training at epoch {} ...".format(epoch))
         model, cfx_matrix, log_loss = train(
@@ -230,7 +234,9 @@ def main():
 
     # train/test
     if args.mode == "train":
-        loss_path = os.path.join(learned_model_dir, f"log_loss_{args.model}_{args.loss_fn}.json")
+        loss_path = os.path.join(
+            learned_model_dir, f"log_loss_{args.model}_{args.loss_fn}.json"
+        )
         do_train(
             args.epochs,
             train_loader,

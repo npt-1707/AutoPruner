@@ -1,7 +1,9 @@
 from src.finetune.dataset import CallGraphDataset
-from src.utils.utils import read_config_file, Logger
+from src.utils.utils import read_config_file, Logger, set_seed
 from argparse import ArgumentParser
 import os
+
+set_seed(42)
 
 def get_args():
     parser = ArgumentParser()

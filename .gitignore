@@ -2,3 +2,4 @@ output
 *.npy
 *.config
 *.sh
+test*

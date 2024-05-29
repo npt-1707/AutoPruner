@@ -12,6 +12,7 @@ from src.utils.utils import (
     read_config_file,
     load_json,
     save_json,
+    set_seed,
 )
 from src.utils.loss_fn import get_loss_fn
 from src.finetune.model import models
@@ -30,6 +31,8 @@ import math
 import statistics
 
 warnings.filterwarnings("ignore")
+
+set_seed(42)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -167,7 +170,7 @@ def do_train(
             train_loader, model, mean_loss, loss_fn, optimizer, cfx_matrix
         )
         logs_loss[epoch] = log_loss
-        
+
         logger.info("Saving model ...")
         torch.save(
             model.state_dict(),
@@ -219,12 +222,8 @@ def main():
     if not os.path.exists(learned_model_dir):
         os.makedirs(learned_model_dir)
 
-    train_dataset = FinetunedDataset(
-        config, "train", args.model, args.loss_fn, logger
-    )
-    test_dataset = FinetunedDataset(
-        config, "test", args.model, args.loss_fn, logger
-    )
+    train_dataset = FinetunedDataset(config, "train", args.model, args.loss_fn, logger)
+    test_dataset = FinetunedDataset(config, "test", args.model, args.loss_fn, logger)
 
     logger.info(
         "Dataset have {} train samples and {} test samples".format(
@@ -262,7 +261,9 @@ def main():
     optimizer = optim.Adam(model.parameters(), lr=5e-6)
 
     if args.mode == "train":
-        loss_path = os.path.join(learned_model_dir, f"log_loss_{args.model}_{args.loss_fn}.json")
+        loss_path = os.path.join(
+            learned_model_dir, f"log_loss_{args.model}_{args.loss_fn}.json"
+        )
         do_train(
             args.epochs,
             train_loader,
