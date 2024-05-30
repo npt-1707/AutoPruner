@@ -85,7 +85,10 @@ class EmbeddingModel(nn.Module):
         }
         if self.model_name != "codet5p-base":
             kwargs["return_dict"] = False
-        emb = self.encoder(**kwargs)
+        if "plbart" in self.model_name:
+            emb = self.encoder.encoder(**kwargs)
+        else:
+            emb = self.encoder(**kwargs)
         if self.model_name != "codet5p-base":
             emb = emb[0][:, 0]
         out = self.fc(emb)
@@ -98,7 +101,4 @@ class EmbeddingModel(nn.Module):
 
         if "trust_remote_code" in models[self.model_name]:
             kwargs["trust_remote_code"] = True
-        model = models[self.model_name]["model"].from_pretrained(**kwargs)
-        if "plbart" in self.model_name:
-            return model.encoder
-        return model
+        return models[self.model_name]["model"].from_pretrained(**kwargs)  

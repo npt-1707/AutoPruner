@@ -14,20 +14,6 @@ set_seed(42)
 
 def save_finetune(config, mode, model_name, loss_fn, logger, batch_size=10):
     logger.info(f"Saving finetuned embeddings for {model_name} model")
-    PARAMS = {"batch_size": batch_size, "shuffle": False, "num_workers": 4}
-    dataset = CallGraphDataset(config, mode, model_name, logger)
-    dataloader = DataLoader(dataset, **PARAMS)
-    model_path = os.path.join(
-        config["LEARNED_MODEL_DIR"],
-        model_name,
-        loss_fn,
-    )
-    with open(
-        os.path.join(model_path, "best_model.txt"),
-        "r",
-    ) as f:
-        best_model = f.read().strip()
-    model_path = os.path.join(model_path, best_model)
     save_dir = os.path.join(
         config["CACHE_DIR"],
         model_name,
@@ -40,6 +26,20 @@ def save_finetune(config, mode, model_name, loss_fn, logger, batch_size=10):
     if len(os.listdir(save_dir)) > 0:
         logger.info("Directory {} already exists".format(save_dir))
         return
+    PARAMS = {"batch_size": batch_size, "shuffle": False, "num_workers": 4}
+    model_path = os.path.join(
+        config["LEARNED_MODEL_DIR"],
+        model_name,
+        loss_fn,
+    )
+    with open(
+        os.path.join(model_path, "best_model.txt"),
+        "r",
+    ) as f:
+        best_model = f.read().strip()
+    model_path = os.path.join(model_path, best_model)
+    dataset = CallGraphDataset(config, mode, model_name, logger)
+    dataloader = DataLoader(dataset, **PARAMS)
     model = EmbeddingModel(model_name)
 
     if torch.cuda.device_count() > 1:
