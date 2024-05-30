@@ -50,31 +50,31 @@ class FinetunedDataset(Dataset):
             self.config["CACHE_DIR"], model, loss_fn
         )
         self.save_path = os.path.join(self.save_dir, f"ft_{self.mode}.pkl")
-        self.cg_file = self.config["FULL_FILE"]
-
-        dirs = [
-            d
-            for d in os.listdir(self.save_dir)
-            if os.path.isdir(os.path.join(self.save_dir, d))
-            and f"{self.mode}_finetuned" in d
-        ]
-        self.batch_size = max([int(d.split("_")[-1]) for d in dirs])
-        self.emd_dir = os.path.join(
-            self.save_dir, f"{self.mode}_finetuned_{self.batch_size}"
-        )
-
-        if self.mode == "train":
-            self.program_lists = os.path.join(self.config["TRAINING_PROGRAMS_LIST"])
-        elif self.mode == "test":
-            self.program_lists = os.path.join(self.config["TEST_PROGRAMS_LIST"])
-        else:
-            return NotImplemented
-
-        self.header_names = compute_header(header_names, self.config["HEADERS"])
 
         if self.has_cache():
             self.load()
         else:
+            self.cg_file = self.config["FULL_FILE"]
+
+
+            if self.mode == "train":
+                self.program_lists = os.path.join(self.config["TRAINING_PROGRAMS_LIST"])
+            elif self.mode == "test":
+                self.program_lists = os.path.join(self.config["TEST_PROGRAMS_LIST"])
+            else:
+                return NotImplemented
+
+            self.header_names = compute_header(header_names, self.config["HEADERS"])
+            dirs = [
+                d
+                for d in os.listdir(self.save_dir)
+                if os.path.isdir(os.path.join(self.save_dir, d))
+                and f"{self.mode}_finetuned" in d
+            ]
+            self.batch_size = max([int(d.split("_")[-1]) for d in dirs])
+            self.emd_dir = os.path.join(
+                self.save_dir, f"{self.mode}_finetuned_{self.batch_size}"
+            )
             self.process()
             self.save()
 
