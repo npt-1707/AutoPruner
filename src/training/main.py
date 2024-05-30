@@ -75,7 +75,7 @@ def train(dataloader, model, mean_loss, loss_fn, optimizer, cfx_matrix):
     return model, cfx_matrix, log_loss
 
 
-def do_test(dataloader, model, logger, is_write=False):
+def do_test(dataloader, model, logger, is_write=""):
     model.eval()
     cfx_matrix = np.array([[0, 0], [0, 0]])
     result_per_programs = {}
@@ -109,7 +109,7 @@ def do_test(dataloader, model, logger, is_write=False):
         loop.set_postfix(pre=precision, rec=recall, f1=f1)
 
     if is_write:
-        np.save("prediction.npy", np.array(all_outputs))
+        np.save(is_write, np.array([all_outputs, all_labels]))
 
     (tn, fp), (fn, tp) = cfx_matrix
     precision = tp / (tp + fp)
@@ -178,7 +178,7 @@ def do_train(
         )
 
         logger.info("Evaluating ...")
-        f1 = do_test(test_loader, model, logger, False)
+        f1 = do_test(test_loader, model, logger)
         if f1 > max_f1:
             max_f1 = f1
             logger.info("Saving best model ...")
@@ -276,8 +276,14 @@ def main():
             loss_path,
         )
     elif args.mode == "test":
-        model.load_state_dict(torch.load(os.path.join(learned_model_dir, "model.pth")))
-        do_test(test_loader, model, logger, True)
+        model.load_state_dict(
+            torch.load(os.path.join(learned_model_dir, "model_epoch_4.pth"))
+        )
+        pred_path = "output"
+        if not os.path.exists(pred_path):
+            os.makedirs(pred_path)
+        pred_path = os.path.join(pred_path, f"pred_{args.model}_{args.loss_fn}.npy")
+        do_test(test_loader, model, logger, pred_path)
     else:
         raise NotImplemented
 
