@@ -11,14 +11,16 @@ import argparse
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config_path", type=str, default="config/wala.config") 
+    parser.add_argument("--model", type=str, default="codebert-base")
+    parser.add_argument("--loss_fn", type=str, default="cross_entropy")
     
     return parser.parse_args()
 
 args = get_args()
 config = read_config_file( args.config_path)
-
+output_path = os.path.join("output", f"pred_{args.model}_{args.loss_fn}.npy")
 with open(config["TEST_PROGRAMS_LIST"], "r") as f:
-    output = np.load(f"prediction.npy")
+    output = np.load(output_path)[0]
     cnt = 0
     all_precision = []
     all_recall = []
@@ -72,7 +74,8 @@ with open(config["TEST_PROGRAMS_LIST"], "r") as f:
         all_recall.append(temp[1])
         all_f1.append(2*temp[0]*temp[1]/(temp[0]+temp[1]))
 
-print("=== Monomorphic Call-site Detection ===")      
+print("=== Monomorphic Call-site Detection ===")
+print(f"[INFO] Model: {args.model}, Loss: {args.loss_fn}")      
 print("[EVAL-AVG] Precision {} ({}), Recall {}({}), F1 {}({})".format(round(statistics.mean(all_precision), 2),
                                                                                             round(statistics.stdev(all_precision), 2), 
                                                                                             round(statistics.mean(all_recall), 2),
