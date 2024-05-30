@@ -2,7 +2,6 @@ import os
 import pandas as pd
 import numpy as np
 from collections import defaultdict
-from tqdm import tqdm
 from sklearn.metrics import confusion_matrix, precision_score, recall_score
 from src.utils.utils import read_config_file
 import statistics
@@ -33,7 +32,7 @@ with open(config["TEST_PROGRAMS_LIST"], "r") as f:
         new_fanout = defaultdict(lambda: 0)
         da_fanout = defaultdict(lambda: 0)
         call_sites = set()
-        for i in tqdm(range(len(df['wiretap']))):
+        for i in range(len(df['wiretap'])):
             call_site = (df['method'][i], df['offset'][i], filename)
             call_sites.add(call_site)
             if output[cnt] >= 0.5:
