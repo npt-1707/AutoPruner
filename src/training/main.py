@@ -276,7 +276,7 @@ def main():
             loss_path,
         )
     elif args.mode == "test":
-        model.load_state_dict(os.path.join(learned_model_dir, "model.pth"))
+        model.load_state_dict(torch.load(os.path.join(learned_model_dir, "model.pth")))
         do_test(test_loader, model, logger, True)
     else:
         raise NotImplemented
