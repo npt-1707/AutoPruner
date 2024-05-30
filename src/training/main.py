@@ -84,6 +84,7 @@ def do_test(dataloader, model, logger, is_write=""):
 
     all_outputs = []
     all_labels = []
+    all_prg_idx = []
     loop = tqdm(enumerate(dataloader), leave=False, total=len(dataloader))
     for idx, batch in loop:
         code = batch["code"].to(device)
@@ -102,6 +103,7 @@ def do_test(dataloader, model, logger, is_write=""):
             prog_idx, out, lb = program_ids[i], output[i], label[i]
             result_per_programs[prog_idx]["lb"].append(lb)
             result_per_programs[prog_idx]["output"].append(out)
+            all_prg_idx.append(prog_idx)
             all_outputs.append(out)
             all_labels.append(lb)
 
@@ -109,7 +111,7 @@ def do_test(dataloader, model, logger, is_write=""):
         loop.set_postfix(pre=precision, rec=recall, f1=f1)
 
     if is_write:
-        np.save(is_write, np.array([all_outputs, all_labels]))
+        np.save(is_write, np.array([all_outputs, all_labels, all_prg_idx]))
 
     (tn, fp), (fn, tp) = cfx_matrix
     precision = tp / (tp + fp)
