@@ -32,12 +32,7 @@ def save_finetune(config, mode, model_name, loss_fn, logger, batch_size=10):
         model_name,
         loss_fn,
     )
-    with open(
-        os.path.join(model_path, "best_model.txt"),
-        "r",
-    ) as f:
-        best_model = f.read().strip()
-    model_path = os.path.join(model_path, best_model)
+    model_path = os.path.join(model_path, "model_epoch_1.pth")
     dataset = CallGraphDataset(config, mode, model_name, logger)
     dataloader = DataLoader(dataset, **PARAMS)
     model = EmbeddingModel(model_name)
