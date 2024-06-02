@@ -194,8 +194,8 @@ def main():
     if not os.path.exists(learned_model_dir):
         os.makedirs(learned_model_dir)
 
-    train_dataset = FinetunedDataset(config, "train", args.model, args.loss, logger)
-    test_dataset = FinetunedDataset(config, "test", args.model, args.loss, logger)
+    train_dataset = FinetunedDataset(config, "train", args.model, args.loss_fn, logger)
+    test_dataset = FinetunedDataset(config, "test", args.model, args.loss_fn, logger)
     logger.info(
         "Dataset have {} train samples and {} test samples".format(
             len(train_dataset), len(test_dataset)
