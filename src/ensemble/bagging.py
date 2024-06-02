@@ -134,15 +134,35 @@ def do_test(dataloader, model, logger, is_write=False):
         )
     )
 
+def get_dataset_classes_index(dataset):
+    major_class = []
+    minor_class = []
+    for idx, data in enumerate(dataset):
+        if data["label"] == 0:
+            major_class.append(idx)
+        else:
+            minor_class.append(idx)
+    return major_class, minor_class
+
+def stratify_sample_indices(major_class, minor_class, sample_size):
+    indices = []
+    n_major = len(major_class)
+    n_minor = len(minor_class)
+    ratio = n_major / n_minor
+    n_minor_sample = int(sample_size / (1 + ratio))
+    n_major_sample = sample_size - n_minor_sample
+    indices.extend(np.random.choice(major_class, n_major_sample, replace=True))
+    indices.extend(np.random.choice(minor_class, n_minor_sample, replace=True))
+    return indices
+        
 
 def get_bagging_dataloaders(original_dataloader, n_estimators):
     dataset = original_dataloader.dataset
+    major_class, minor_class = get_dataset_classes_index(dataset)
     dataloaders = []
     for i in range(n_estimators):
         # sampling with replacement
-        indices = torch.randint(
-            high=len(dataset), size=(len(dataset),), dtype=torch.int64
-        )
+        indices = stratify_sample_indices(major_class, minor_class, len(dataset))
         sub_dataset = Subset(dataset, indices)
         dataloader = DataLoader(
             sub_dataset,
