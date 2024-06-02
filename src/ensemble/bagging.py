@@ -216,7 +216,7 @@ def main():
     test_loader = DataLoader(test_dataset, **TEST_PARAMS)
 
     model = BaggingModel(
-        estimator=NNClassifier_Combine,
+        base_model=NNClassifier_Combine,
         n_estimators=args.num_est,
         estimator_params={
             "hidden_size": 32,
