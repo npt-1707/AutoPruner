@@ -8,15 +8,14 @@ from src.utils.utils import (
     AverageMeter,
     evaluation_metrics,
     read_config_file,
-    load_json,
-    save_json,
+    set_seed
 )
-from src.utils.loss_fn import get_loss_fn
 from src.finetune.model import models
 from tqdm import tqdm
 from torch import nn
 from torch.nn import functional as F
 from sklearn.metrics import precision_score, recall_score
+from torch.utils.data import DataLoader, Subset
 import numpy as np
 import torch.optim as optim
 import torch
@@ -28,6 +27,7 @@ import os
 
 warnings.filterwarnings("ignore")
 
+set_seed(42)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -135,6 +135,26 @@ def do_test(dataloader, model, logger, is_write=False):
     )
 
 
+def get_bagging_dataloaders(original_dataloader, n_estimators):
+    dataset = original_dataloader.dataset
+    dataloaders = []
+    for i in range(n_estimators):
+        # sampling with replacement
+        indices = torch.randint(
+            high=len(dataset), size=(len(dataset),), dtype=torch.int64
+        )
+        sub_dataset = Subset(dataset, indices)
+        dataloader = DataLoader(
+            sub_dataset,
+            batch_size=original_dataloader.batch_size,
+            num_workers=original_dataloader.num_workers,
+            collate_fn=original_dataloader.collate_fn,
+            shuffle=True,
+        )
+        dataloaders.append(dataloader)
+    return dataloaders
+
+
 def do_train(
     epochs,
     train_loader,
@@ -144,15 +164,17 @@ def do_train(
     logger,
     learned_model_dir,
 ):
+    train_loaders = get_bagging_dataloaders(train_loader, len(bagging_model))
     for idx, model in enumerate(bagging_model.estimators):
         logger.info(f"Training estimator {idx} ...")
         cfx_matrix = np.array([[0, 0], [0, 0]])
         mean_loss = AverageMeter()
         optimizer = bagging_model.optimizers[idx]
+        loader = train_loaders[idx]
         for epoch in range(epochs):
             logger.info("Start training at epoch {} ...".format(epoch))
             model, cfx_matrix = train(
-                train_loader, model, mean_loss, loss_fn, optimizer, cfx_matrix
+                loader, model, mean_loss, loss_fn, optimizer, cfx_matrix
             )
             logger.info("Evaluating ...")
             do_test(test_loader, model, logger)
