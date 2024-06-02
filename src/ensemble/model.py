@@ -4,6 +4,7 @@ from torch.optim import Adam
 import torch
 class BaggingModel(nn.Module):
     def __init__(self, base_model, n_estimators=10, estimator_params=None):
+        super(BaggingModel, self).__init__()
         self.base_model = base_model
         self.n_estimators = n_estimators
         self.estimator_params = estimator_params if estimator_params is not None else {}
