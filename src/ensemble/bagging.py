@@ -181,6 +181,9 @@ def do_train(
     logger.info("Saving model ...")
     save_path = os.path.join(learned_model_dir, f"bagging_model_{len(bagging_model)}_estimators.pth")
     torch.save(bagging_model.state_dict(), save_path)
+    logger.info("Model saved at {}".format(save_path))
+    logger.info("Evaluating BaggingModel ...")
+    do_test(test_loader, bagging_model, logger)
     logger.info("Done !!!")
 
 
