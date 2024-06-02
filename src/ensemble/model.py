@@ -27,7 +27,7 @@ class BaggingModel(nn.Module):
         ]
 
     def forward(self, code, struct):
-        pred = [estimator(code, struct)[:, 1] for estimator in self.estimators]
+        pred = [estimator(code, struct) for estimator in self.estimators]
         pred = sum(pred)/len(pred)
         return pred
     
