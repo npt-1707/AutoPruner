@@ -1,4 +1,4 @@
-output
+output*
 *.npy
 *.config
 *.sh
