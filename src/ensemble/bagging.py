@@ -157,7 +157,7 @@ def do_train(
             logger.info("Evaluating ...")
             do_test(test_loader, model, logger)
     logger.info("Saving model ...")
-    save_path = os.path.join(learned_model_dir, "bagging_model.pth")
+    save_path = os.path.join(learned_model_dir, f"bagging_model_{len(bagging_model)}_estimators.pth")
     torch.save(bagging_model.state_dict(), save_path)
     logger.info("Done !!!")
 
@@ -170,7 +170,7 @@ def load_args():
     parser.add_argument("--log_dir", type=str, default="log")
     parser.add_argument("--epoch", type=int, default=5)
     parser.add_argument("--batch_size", type=int, default=100)
-    parser.add_argument("--log_iter", type=int, default=250)
+    # parser.add_argument("--log_iter", type=int, default=250)
     parser.add_argument("--num_est", type=int, default=5)
     parser.add_argument("--mode", type=str, default="train")
     return parser.parse_args()
@@ -238,7 +238,7 @@ def main():
         )
     elif args.mode == "test":
         logger.info(f"Evaluating BaggingModel<{args.model}> ...")
-        save_path = os.path.join(learned_model_dir, "bagging_model.pth")
+        save_path = os.path.join(learned_model_dir, f"bagging_model_{args.num_est}_estimators.pth")
         model.load_state_dict(torch.load(save_path))
         pred_path = "output"
         if not os.path.exists(pred_path):
