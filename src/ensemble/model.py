@@ -27,9 +27,8 @@ class BaggingModel(nn.Module):
         ]
 
     def forward(self, code, struct):
-        pred = [estimator(code, struct) for estimator in self.estimators]
-        #bagging results of all estimators
-        pred = torch.mean(pred, dim=0)
+        pred = [estimator(code, struct)[:, 1] for estimator in self.estimators]
+        pred = sum(pred)/len(pred)
         return pred
     
     def state_dict(self):
