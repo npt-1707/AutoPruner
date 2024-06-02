@@ -40,3 +40,11 @@ class BaggingModel(nn.Module):
         assert len(state_dict) == self.n_estimators, "Invalid state dict: number of estimators mismatch"
         for idx, estimator in enumerate(self.estimators):
             estimator.load_state_dict(state_dict[idx])
+            
+    def eval(self):
+        for estimator in self.estimators:
+            estimator.eval()
+    
+    def train(self):
+        for estimator in self.estimators:
+            estimator.train()
