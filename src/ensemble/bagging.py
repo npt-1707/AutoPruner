@@ -184,17 +184,17 @@ def do_train(
     logger,
     learned_model_dir,
 ):
-    train_loaders = get_bagging_dataloaders(train_loader, len(bagging_model))
+    # train_loaders = get_bagging_dataloaders(train_loader, len(bagging_model))
     for idx, model in enumerate(bagging_model.estimators):
         logger.info(f"Training estimator {idx} ...")
         cfx_matrix = np.array([[0, 0], [0, 0]])
         mean_loss = AverageMeter()
         optimizer = bagging_model.optimizers[idx]
-        loader = train_loaders[idx]
+        # loader = train_loaders[idx]
         for epoch in range(epochs):
             logger.info("Start training at epoch {} ...".format(epoch))
             model, cfx_matrix = train(
-                loader, model, mean_loss, loss_fn, optimizer, cfx_matrix
+                train_loader, model, mean_loss, loss_fn, optimizer, cfx_matrix
             )
             logger.info("Evaluating ...")
             do_test(test_loader, model, logger)
