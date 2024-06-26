@@ -14,7 +14,7 @@ set_seed(42)
 
 def get_memory_usage(device):
     if device.type == "cuda":
-        return torch.cuda.memory_allocated(device) / 1024 ** 2
+        return torch.cuda.max_memory_reserved(device) / (1024 ** 2)
     else:
         return 0
 
