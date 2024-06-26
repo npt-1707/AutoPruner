@@ -12,6 +12,12 @@ from src.finetune.model import EmbeddingModel
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 set_seed(42)
 
+def get_memory_usage(device):
+    if device.type == "cuda":
+        return torch.cuda.memory_allocated(device) / 1024 ** 2
+    else:
+        return 0
+
 def save_finetune(config, mode, model_name, loss_fn, logger, batch_size=10):
     logger.info(f"Saving finetuned embeddings for {model_name} model")
     save_dir = os.path.join(
@@ -48,6 +54,8 @@ def save_finetune(config, mode, model_name, loss_fn, logger, batch_size=10):
         ids = batch["ids"].to(device)
         mask = batch["mask"].to(device)
         _, emb = model(ids=ids, mask=mask)
+        if mode == 'test':
+            logger.info(f"Memory used: {get_memory_usage(device)}")
         emb = emb.detach().cpu().numpy()
         save_path = os.path.join(save_dir, "{}.npy".format(idx))
         np.save(save_path, emb)
@@ -74,7 +82,7 @@ def main():
         os.makedirs(log_path)
     log_path = os.path.join(log_path, "save_finetune_{}.log".format(args.model))
     logger = Logger(log_path)
-    save_finetune(config, "train", args.model, args.loss_fn, logger, args.batch_size)
+    # save_finetune(config, "train", args.model, args.loss_fn, logger, args.batch_size)
     save_finetune(config, "test", args.model, args.loss_fn, logger, args.batch_size)
 
 
