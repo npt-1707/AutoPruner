@@ -218,9 +218,9 @@ def main():
     # Model, loss function, optimizer
     model = EmbeddingModel(args.model)
 
-    if torch.cuda.device_count() > 1:
-        logger.info("Let's use", torch.cuda.device_count(), "GPUs!")
-        model = nn.DataParallel(model)
+    # if torch.cuda.device_count() > 1:
+    #     logger.info("Let's use", torch.cuda.device_count(), "GPUs!")
+    #     model = nn.DataParallel(model)
 
     model.to(device)
     loss_fn = get_loss_fn(args.loss_fn)

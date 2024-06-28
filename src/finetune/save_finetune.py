@@ -43,9 +43,9 @@ def save_finetune(config, mode, model_name, loss_fn, logger, batch_size=10):
     dataloader = DataLoader(dataset, **PARAMS)
     model = EmbeddingModel(model_name)
 
-    if torch.cuda.device_count() > 1:
-        logger.info("Let's use", torch.cuda.device_count(), "GPUs!")
-        model = nn.DataParallel(model)
+    # if torch.cuda.device_count() > 1:
+    #     logger.info("Let's use", torch.cuda.device_count(), "GPUs!")
+    #     model = nn.DataParallel(model)
     checkpoint = torch.load(model_path)
     model.load_state_dict(checkpoint["model"])
     model.to(device)
