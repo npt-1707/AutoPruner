@@ -53,6 +53,8 @@ def save_finetune(config, mode, model_name, loss_fn, logger, batch_size=10):
     for idx, batch in loop:
         ids = batch["ids"].to(device)
         mask = batch["mask"].to(device)
+        if mode == "test":
+            logger.info(f"Memory used: {get_memory_usage(device)}")
         _, emb = model(ids=ids, mask=mask)
         if mode == 'test':
             logger.info(f"Memory used: {get_memory_usage(device)}")

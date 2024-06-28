@@ -22,7 +22,7 @@ models = {
     },
     "plbart-base": {
         "model": PLBartModel,
-        "max_length": 1024,
+        "max_length": 512,
         "embedding_size": 768,
         "pretrained_name": "uclanlp/plbart-base",
     },
