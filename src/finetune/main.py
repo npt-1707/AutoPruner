@@ -141,13 +141,13 @@ def do_train(
         )
         logs_loss[epoch] = log_loss
 
-        logger.info("Evaluating ...")
-        _, _, f1 = do_test(test_loader, model, logger)
-        if f1 > max_f1:
-            max_f1 = f1
-            logger.info("Saving best model ...")
-            with open(os.path.join(learned_model_dir, "best_model.txt"), "w") as f:
-                f.write("model_epoch_{}.pth".format(epoch))
+        # logger.info("Evaluating ...")
+        # _, _, f1 = do_test(test_loader, model, logger)
+        # if f1 > max_f1:
+        #     max_f1 = f1
+        #     logger.info("Saving best model ...")
+        #     with open(os.path.join(learned_model_dir, "best_model.txt"), "w") as f:
+        #         f.write("model_epoch_{}.pth".format(epoch))
         logger.info("Saving model ...")
         state = {
             "model": model.state_dict(),
