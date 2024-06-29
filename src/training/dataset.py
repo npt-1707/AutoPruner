@@ -45,7 +45,6 @@ class FinetunedDataset(Dataset):
         self.config = config
         self.logger = logger
         self.raw_data_path = self.config["BENCHMARK_CALLGRAPHS"]
-        self.processed_path = self.config["PROCESSED_DATA"]
         self.save_dir = os.path.join(
             self.config["CACHE_DIR"], model, loss_fn
         )

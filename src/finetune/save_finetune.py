@@ -84,7 +84,7 @@ def main():
         os.makedirs(log_path)
     log_path = os.path.join(log_path, "save_finetune_{}.log".format(args.model))
     logger = Logger(log_path)
-    # save_finetune(config, "train", args.model, args.loss_fn, logger, args.batch_size)
+    save_finetune(config, "train", args.model, args.loss_fn, logger, args.batch_size)
     save_finetune(config, "test", args.model, args.loss_fn, logger, args.batch_size)
 
 
