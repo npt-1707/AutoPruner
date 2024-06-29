@@ -42,7 +42,8 @@ TEST_PARAMS = {"batch_size": 100, "shuffle": False, "num_workers": 8}
 
 def train(dataloader, model, mean_loss, loss_fn, optimizer, cfx_matrix):
     model.train()
-    loop = tqdm(enumerate(dataloader), leave=False, total=len(dataloader))
+    # loop = tqdm(enumerate(dataloader), leave=False, total=len(dataloader))
+    loop = enumerate(dataloader)
     log_loss = []
     for idx, batch in loop:
         code = batch["code"].to(device)
@@ -66,7 +67,7 @@ def train(dataloader, model, mean_loss, loss_fn, optimizer, cfx_matrix):
         # logger.info("Iter {}: Loss {}, Precision {}, Recall {}, F1 {}".format(idx, loss.item(), precision, recall, f1))
         if idx % 500 == 0:
             log_loss.append(mean_loss.item())
-        loop.set_postfix(loss=mean_loss.item(), pre=precision, rec=recall, f1=f1)
+        # loop.set_postfix(loss=mean_loss.item(), pre=precision, rec=recall, f1=f1)
 
         optimizer.zero_grad()
         loss.backward()
@@ -85,7 +86,8 @@ def do_test(dataloader, model, logger, is_write=""):
     all_outputs = []
     all_labels = []
     all_prg_idx = []
-    loop = tqdm(enumerate(dataloader), leave=False, total=len(dataloader))
+    # loop = tqdm(enumerate(dataloader), leave=False, total=len(dataloader))
+    loop = enumerate(dataloader)
     for idx, batch in loop:
         code = batch["code"].to(device)
         struct = batch["struct"].to(device)

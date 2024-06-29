@@ -49,16 +49,17 @@ def save_finetune(config, mode, model_name, loss_fn, logger, batch_size=10):
     checkpoint = torch.load(model_path)
     model.load_state_dict(checkpoint["model"])
     model.to(device)
-    loop = tqdm(enumerate(dataloader), leave=False, total=len(dataloader))
+    # loop = tqdm(enumerate(dataloader), leave=False, total=len(dataloader))
+    loop = enumerate(dataloader)
     for idx, batch in loop:
         ids = batch["ids"].to(device)
         mask = batch["mask"].to(device)
-        if mode == "test":
-            logger.info(f"Memory used: {get_memory_usage(device)}")
+        # if mode == "test":
+        #     logger.info(f"Memory used: {get_memory_usage(device)}")
         _, emb = model(ids=ids, mask=mask)
-        if mode == 'test':
-            logger.info(f"Memory used: {get_memory_usage(device)}")
         emb = emb.detach().cpu().numpy()
+        # if mode == 'test':
+        #     logger.info(f"Memory used: {get_memory_usage(device)}")
         save_path = os.path.join(save_dir, "{}.npy".format(idx))
         np.save(save_path, emb)
     logger.info(f"Saved into {save_dir}!")

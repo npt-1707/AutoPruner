@@ -107,7 +107,8 @@ class FinetunedDataset(Dataset):
                 file_path = os.path.join(self.raw_data_path, filename, self.cg_file)
                 df = pd.read_csv(file_path)
                 features = df[self.header_names].to_numpy()
-                for i in tqdm(range(len(df["wiretap"]))):
+                # for i in tqdm(range(len(df["wiretap"]))):
+                for i in range(len(df["wiretap"])):
                     lb, sanity_check = df["wiretap"][i], df[self.config["SA_LABEL"]][i]
                     if self.mode != "train" or sanity_check == 1:
                         batch_idx = idx // self.batch_size
